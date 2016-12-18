@@ -43,7 +43,6 @@ class Server(object):
                 client.close()
                 return False
 
-    {"ID": "UPDATE_ROOM", "rID": "2", "user1": "KJ", "user2": "JJ", "user3": "AA", "user4": "BC", "user5": "AS"}
 
     def mysend(self, msg, client):
         totalsent = 0
