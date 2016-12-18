@@ -6,8 +6,8 @@ class RoomDataBaseHandler:
         self.db = MySQLdb.connect("localhost", "root", "admin", "roomDB")
         self.cursor = self.db.cursor()
 
-    def addRoom(self, rID, title, hostID, hostLvl, descr):
-        self.cursor.execute("INSERT INTO Rooms (roomID, title, hostID, hostLvl, descr) VALUES (%s, %s, %s, %s, %s);", [str(rID), title, hostID, hostLvl, descr])
+    def addRoom(self, rID, title, hostID, hostLvl, descr, maxUsr):
+        self.cursor.execute("INSERT INTO Rooms (roomID, title, hostID, hostLvl, descr, maxUsr) VALUES (%s, %s, %s, %s, %s, %s);", [str(rID), title, hostID, hostLvl, descr, str(maxUsr)])
         self.db.commit()
 
     def getRoomByIdx(self, idx):
