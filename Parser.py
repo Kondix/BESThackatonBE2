@@ -66,11 +66,11 @@ class Parser:
         descr = self.GetDescr(self.jsonData)
         maxUsr = self.GetMaxUsr(self.jsonData)
         if self.roomDBHandler.getSimilarRecord(title, hID) != None:
-            return "{\"ID\":\"ADD_RESP_ERROR_ALREADY_IN_BASE\"}"
+            return "{\"ID\":\"ADD_RESP_ERROR_ALREADY_IN_BASE\",\"rID\":" + rID + "}"
         else:
             self.roomDBHandler.addRoom(rID, title, hID, hLVL, descr, maxUsr)
             self.roomCnt += 1
-            return "{\"ID\":\"ADD_RESP\"}"
+            return "{\"ID\":\"ADD_RESP\",\"rID\":" + rID + "}"
 
 
     def GetAllRooms(self):
