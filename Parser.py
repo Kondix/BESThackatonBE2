@@ -2,16 +2,21 @@ import json
 from DataBaseHandler import RoomDataBaseHandler
 
 class Parser:
+
     def __init__(self, jsonData = None):
         self.jsonData = json.loads(jsonData)
         self.roomDBHandler = RoomDataBaseHandler()
-        self.maxQuerySize = 5
+        self.maxQuerySize = 150
         self.rooms = []
+        self.GetAllRooms()
+        self.roomCnt = len(self.rooms)+1
 
     def Parse(self):
-        if self.GetTransactionID() == "AVL":
+        if self.GetTransactionID(self.jsonData) == "AVL":
             return self.HandleAvl()
-        if self.GetTransactionID() == "ADD":
+        if self.GetTransactionID(self.jsonData) == "SPEC_AVL":
+            return self.HandleSpecAvl(self.GetDescr(self.jsonData))
+        if self.GetTransactionID(self.jsonData) == "ADD":
             return self.HandleAdd()
         return None
 
@@ -19,19 +24,34 @@ class Parser:
         self.GetAllRooms()
         return self.PrepareAvlResponse()
 
+    def HandleSpecAvl(self, descr):
+        self.GetAllRoomsWhere(descr)
+        return self.PrepareAvlResponse()
+
     def HandleAdd(self):
-        rID = self.getRoomID()
-        title = self.GetTitle()
-        hID = self.GetHostID()
-        hLVL = self.GetHostLvl()
-        descr = self.GetDescr()
-        self.roomDBHandler.addRoom(rID, title, hID, hLVL, descr)
+        #rID = self.GetRoomID(dict(self.jsonData["ROOMS"][0]))
+        rID = self.roomCnt
+        title = self.GetTitle(dict(self.jsonData["ROOMS"][0]))
+        hID = self.GetHostID(dict(self.jsonData["ROOMS"][0]))
+        hLVL = self.GetHostLvl(dict(self.jsonData["ROOMS"][0]))
+        descr = self.GetDescr(dict(self.jsonData["ROOMS"][0]))
+        if self.roomDBHandler.getSimilarRecord(title, hID) != None:
+            return "{\"ID\":\"ADD_RESP_ERROR_ALREADY_IN_BASE\"}"
+        else:
+            self.roomDBHandler.addRoom(rID, title, hID, hLVL, descr)
+            self.roomCnt += 1
+            return "{\"ID\":\"ADD_RESP\"}"
+
 
     def GetAllRooms(self):
         for idx in range(1, self.maxQuerySize):
             if self.roomDBHandler.getRoomByIdx(idx) == None:
                 break
             self.rooms.append(self.roomDBHandler.getRoomByIdx(idx))
+
+    def GetAllRoomsWhere(self, descr):
+        print(descr)
+        self.rooms.append(self.roomDBHandler.getRoomByTitle(descr))
 
     def PrepareAvlResponse(self):
         roomsTable = []
@@ -46,20 +66,20 @@ class Parser:
 
         return json.dumps([{"ID": "AVL_RESP", "COUNT": roomSize, "ROOMS": roomsTable}], separators=(',', ':'))
 
-    def GetTransactionID(self):
-        return self.jsonData["ID"]
+    def GetTransactionID(self, item):
+        return item["ID"]
 
-    def GetRoomID(self):
-        return self.jsonData["rID"]
+    def GetRoomID(self, item):
+        return item["rID"]
 
-    def GetTitle(self):
-        return self.jsonData["title"]
+    def GetTitle(self, item):
+        return item["title"]
 
-    def GetHostID(self):
-        return self.jsonData["hID"]
+    def GetHostID(self, item):
+        return item["hID"]
 
-    def GetHostLvl(self):
-        return self.jsonData["hLVL"]
+    def GetHostLvl(self, item):
+        return item["hLVL"]
 
-    def GetDescr(self):
-        return self.jsonData["descr"]
+    def GetDescr(self, item):
+        return item["descr"]

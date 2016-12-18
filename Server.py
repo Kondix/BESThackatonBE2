@@ -37,7 +37,7 @@ class Server(object):
                         print(response)
                         client.send(bytearray(response, 'utf-8'))
                 else:
-                    raise error('Client disconnected')
+                   raise error('Client disconnected')
             except:
                 print ('Connection from ' + address[0] + ' is over.')
                 client.close()
