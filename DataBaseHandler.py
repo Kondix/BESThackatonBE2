@@ -25,8 +25,20 @@ class RoomDataBaseHandler:
 
     def getRoomByTitle(self, title):
         self.cursor.execute("SELECT * FROM Rooms WHERE descr LIKE %s ", ["%" + title + "%"])
-        room = self.cursor.fetchone()
-        return room
+        rooms = self.cursor.fetchall()
+        return rooms
+
+    def getSpecificRoomByIdx(self, rID):
+        self.cursor.execute("SELECT * FROM SpecRooms WHERE roomID = %s", [str(rID)])
+        return self.cursor.fetchone()
+
+    def addSpecificRoom(self, rID, user1 = 0, user2 = 0, user3 = 0, user4 = 0, user5 = 0):
+        self.cursor.execute("INSERT INTO SpecRooms (roomID, user1, user2, user3, user4, user5) VALUES (%s, %s, %s, %s, %s, %s);", [str(rID), str(user1), str(user2), str(user3), str(user4), str(user5)])
+        self.db.commit()
+
+    def updateSpecificRoom(self, rID, user1 = 0, user2 = 0, user3 = 0, user4 = 0, user5 = 0):
+        self.cursor.execute("UPDATE SpecRooms SET user1 = %s, user2 = %s, user3 = %s, user4 = %s, user5 = %s WHERE roomID = %s;", [str(user1), str(user2), str(user3), str(user4), str(user5), str(rID)])
+        self.db.commit()
 
     def __del__(self):
         # disconnect from server

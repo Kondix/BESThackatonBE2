@@ -14,28 +14,57 @@ class Parser:
     def Parse(self):
         if self.GetTransactionID(self.jsonData) == "AVL":
             return self.HandleAvl()
-        if self.GetTransactionID(self.jsonData) == "SPEC_AVL":
+        elif self.GetTransactionID(self.jsonData) == "SPEC_AVL":
             return self.HandleSpecAvl(self.GetDescr(self.jsonData))
-        if self.GetTransactionID(self.jsonData) == "ADD":
+        elif self.GetTransactionID(self.jsonData) == "ADD":
             return self.HandleAdd()
+        elif self.GetTransactionID(self.jsonData) == "UPDATE_ROOM":
+            return self.HandleUpdateRoom()
+        elif self.GetTransactionID(self.jsonData) == "AVL_ROOM":
+            return self.HandleAvlRoom()
         return None
 
     def HandleAvl(self):
-        self.GetAllRooms()
         return self.PrepareAvlResponse()
 
     def HandleSpecAvl(self, descr):
         self.GetAllRoomsWhere(descr)
         return self.PrepareAvlResponse()
 
+    def HandleAvlRoom(self):
+        rID = self.GetRoomID(self.jsonData)
+        specRoom = self.roomDBHandler.getSpecificRoomByIdx(rID)
+        if specRoom != None:
+            self.PrepareRoomAvlResponse(specRoom)
+        else:
+            return "{\"ID\":\"AVL_ROOM_ERROR\"}"
+
+    def HandleUpdateRoom(self):
+        rID = self.GetRoomID(self.jsonData)
+        specRoom = self.roomDBHandler.getSpecificRoomByIdx(rID)
+        if specRoom != None:
+            self.roomDBHandler.updateSpecificRoom(rID, self.GetUsr(self.jsonData, 1), self.GetUsr(self.jsonData, 2),
+                                               self.GetUsr(self.jsonData, 3), self.GetUsr(self.jsonData, 4),
+                                               self.GetUsr(self.jsonData, 5))
+            return "{\"ID\":\"UPDATE_ROOM_RESP\"}"
+        else:
+            self.roomDBHandler.addSpecificRoom(rID, self.GetUsr(self.jsonData, 1), self.GetUsr(self.jsonData, 2), self.GetUsr(self.jsonData, 3), self.GetUsr(self.jsonData, 4), self.GetUsr(self.jsonData, 5))
+            return "{\"ID\":\"ADD_ROOM_RESP\"}"
+
+    def PrepareRoomAvlResponse(self, specRoom):
+
+        return json.dumps([{"ID": "ROOM_AVL_RESP", "rID" : specRoom[0], "user1" : specRoom[1],
+                               "user2": specRoom[2],"user3": specRoom[3], "user4": specRoom[4],
+                               "user5": specRoom[5]}], separators=(',', ':'))
+
     def HandleAdd(self):
         #rID = self.GetRoomID(dict(self.jsonData["ROOMS"][0]))
         rID = self.roomCnt
-        title = self.GetTitle(dict(self.jsonData["ROOMS"][0]))
-        hID = self.GetHostID(dict(self.jsonData["ROOMS"][0]))
-        hLVL = self.GetHostLvl(dict(self.jsonData["ROOMS"][0]))
-        descr = self.GetDescr(dict(self.jsonData["ROOMS"][0]))
-        maxUsr = self.GetMaxUsr(dict(self.jsonData["ROOMS"][0]))
+        title = self.GetTitle(self.jsonData)
+        hID = self.GetHostID(self.jsonData)
+        hLVL = self.GetHostLvl(self.jsonData)
+        descr = self.GetDescr(self.jsonData)
+        maxUsr = self.GetMaxUsr(self.jsonData)
         if self.roomDBHandler.getSimilarRecord(title, hID) != None:
             return "{\"ID\":\"ADD_RESP_ERROR_ALREADY_IN_BASE\"}"
         else:
@@ -51,8 +80,8 @@ class Parser:
             self.rooms.append(self.roomDBHandler.getRoomByIdx(idx))
 
     def GetAllRoomsWhere(self, descr):
-        print(descr)
-        self.rooms.append(self.roomDBHandler.getRoomByTitle(descr))
+        self.rooms.clear()
+        self.rooms = self.roomDBHandler.getRoomByTitle(descr)
 
     def PrepareAvlResponse(self):
         roomsTable = []
@@ -88,3 +117,6 @@ class Parser:
 
     def GetMaxUsr(self, item):
         return item["maxUsr"]
+
+    def GetUsr(self, item, idx):
+        return item["user"+str(idx)]

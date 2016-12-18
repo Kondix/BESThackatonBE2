@@ -43,6 +43,8 @@ class Server(object):
                 client.close()
                 return False
 
+    {"ID": "UPDATE_ROOM", "rID": "2", "user1": "KJ", "user2": "JJ", "user3": "AA", "user4": "BC", "user5": "AS"}
+
     def mysend(self, msg, client):
         totalsent = 0
         while totalsent < 1024:
@@ -52,5 +54,5 @@ class Server(object):
             totalsent = totalsent + sent
 
 if __name__ == "__main__":
-    port_num = 1235
+    port_num = 1236
     Server('192.168.140.101', int(port_num), 120).listen()
