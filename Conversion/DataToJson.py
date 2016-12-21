@@ -14,7 +14,7 @@ class DataToJson():
         if len(tags) != len(values):
             return None
 
-        for idx in len(tags):
+        for idx in range(len(tags)):
             tempDict[tags[idx]] = values[idx]
 
         return tempDict

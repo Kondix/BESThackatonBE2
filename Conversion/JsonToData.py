@@ -8,3 +8,5 @@ class JsonToData():
     def GetTransactionID(self):
         return self.__request["ID"]
 
+    def GetDescr(self):
+        return self.__request["descr"]

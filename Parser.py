@@ -1,6 +1,7 @@
 import json
 from DataBaseHandler import RoomDataBaseHandler
 from Reqs.GetRequest import GetRequest
+from Reqs.SpecificGetRequest import SpecificGetRequest
 
 class Parser:
 
@@ -17,10 +18,6 @@ class Parser:
         tranObj = self.__GetTransactionObject()
         if tranObj is not None:
             return tranObj.Handle()
-        if self.GetTransactionID(self.jsonData) == "AVL":
-            return self.HandleAvl()
-        elif self.GetTransactionID(self.jsonData) == "SPEC_AVL":
-            return self.HandleSpecAvl(self.GetDescr(self.jsonData))
         elif self.GetTransactionID(self.jsonData) == "ADD":
             return self.HandleAdd()
         elif self.GetTransactionID(self.jsonData) == "UPDATE_ROOM":
@@ -32,14 +29,9 @@ class Parser:
     def __GetTransactionObject(self):
         if self.GetTransactionID(self.jsonData) == "AVL":
             return GetRequest(self.request)
+        if self.GetTransactionID(self.jsonData) == "SPEC_AVL":
+            return SpecificGetRequest(self.request)
         return None
-
-    def HandleAvl(self):
-        return self.PrepareAvlResponse()
-
-    def HandleSpecAvl(self, descr):
-        self.GetAllRoomsWhere(descr)
-        return self.PrepareAvlResponse()
 
     def HandleAvlRoom(self):
         rID = self.GetRoomID(self.jsonData)
@@ -92,20 +84,6 @@ class Parser:
     def GetAllRoomsWhere(self, descr):
         self.rooms.clear()
         self.rooms = self.roomDBHandler.getRoomByTitle(descr)
-
-    def PrepareAvlResponse(self):
-        roomsTable = []
-        roomSize = len(self.rooms)
-        for i in range (0, roomSize):
-            roomsTable.append({"rID" : self.rooms[i][0],
-                               "title" : self.rooms[i][1],
-                               "hID": self.rooms[i][2],
-                               "hLVL": self.rooms[i][3],
-                               "descr": self.rooms[i][4],
-                               "maxUsr": self.rooms[i][5]
-                               })
-
-        return json.dumps([{"ID": "AVL_RESP", "COUNT": roomSize, "ROOMS": roomsTable}], separators=(',', ':'))
 
     def GetTransactionID(self, item):
         return item["ID"]
