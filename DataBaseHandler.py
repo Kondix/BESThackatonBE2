@@ -3,7 +3,7 @@ import MySQLdb
 
 class RoomDataBaseHandler:
     def __init__(self):
-        self.db = MySQLdb.connect("localhost", "root", "admin", "roomDB")
+        self.db = MySQLdb.connect("localhost", "root", "root", "roomDB")
         self.cursor = self.db.cursor()
 
     def addRoom(self, rID, title, hostID, hostLvl, descr, maxUsr):

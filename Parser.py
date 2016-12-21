@@ -1,9 +1,11 @@
 import json
 from DataBaseHandler import RoomDataBaseHandler
+from Reqs.GetRequest import GetRequest
 
 class Parser:
 
     def __init__(self, jsonData = None):
+        self.request = jsonData
         self.jsonData = json.loads(jsonData)
         self.roomDBHandler = RoomDataBaseHandler()
         self.maxQuerySize = 150
@@ -12,6 +14,9 @@ class Parser:
         self.roomCnt = len(self.rooms)+1
 
     def Parse(self):
+        tranObj = self.__GetTransactionObject()
+        if tranObj is not None:
+            return tranObj.Handle()
         if self.GetTransactionID(self.jsonData) == "AVL":
             return self.HandleAvl()
         elif self.GetTransactionID(self.jsonData) == "SPEC_AVL":
@@ -22,6 +27,11 @@ class Parser:
             return self.HandleUpdateRoom()
         elif self.GetTransactionID(self.jsonData) == "AVL_ROOM":
             return self.HandleAvlRoom()
+        return None
+
+    def __GetTransactionObject(self):
+        if self.GetTransactionID(self.jsonData) == "AVL":
+            return GetRequest(self.request)
         return None
 
     def HandleAvl(self):

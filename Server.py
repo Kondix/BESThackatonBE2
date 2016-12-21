@@ -53,5 +53,5 @@ class Server(object):
             totalsent = totalsent + sent
 
 if __name__ == "__main__":
-    port_num = 1236
-    Server('192.168.140.101', int(port_num), 120).listen()
+    port_num = 1235
+    Server('', int(port_num), 120).listen()
