@@ -4,6 +4,8 @@ from Reqs.GetRequest import GetRequest
 from Reqs.SpecificGetRequest import SpecificGetRequest
 from Reqs.AddRequest import AddRequest
 from Reqs.GetRoomRequest import GetRoomRequest
+from Reqs.UpdateRoomRequest import UpdateRoomRequest
+
 
 class Parser:
 
@@ -17,8 +19,6 @@ class Parser:
         tranObj = self.__GetTransactionObject()
         if tranObj is not None:
             return tranObj.Handle()
-        elif self.GetTransactionID(self.jsonData) == "UPDATE_ROOM":
-            return self.HandleUpdateRoom()
         return None
 
     def __GetTransactionObject(self):
@@ -31,23 +31,10 @@ class Parser:
             return AddRequest(self.request)
         if self.GetTransactionID(self.jsonData) == "AVL_ROOM":
             return GetRoomRequest(self.request)
+        if self.GetTransactionID(self.jsonData) == "UPDATE_ROOM":
+            return UpdateRoomRequest(self.request)
         return None
-
-    def HandleUpdateRoom(self):
-        rID = self.GetRoomID(self.jsonData)
-        specRoom = self.roomDBHandler.getSpecificRoomByIdx(rID)
-        if specRoom != None:
-            self.roomDBHandler.updateSpecificRoom(rID, self.GetUsr(self.jsonData, 1), self.GetUsr(self.jsonData, 2),
-                                               self.GetUsr(self.jsonData, 3), self.GetUsr(self.jsonData, 4),
-                                               self.GetUsr(self.jsonData, 5))
-            return "{\"ID\":\"UPDATE_ROOM_RESP\"}"
-        else:
-            self.roomDBHandler.addSpecificRoom(rID, self.GetUsr(self.jsonData, 1), self.GetUsr(self.jsonData, 2), self.GetUsr(self.jsonData, 3), self.GetUsr(self.jsonData, 4), self.GetUsr(self.jsonData, 5))
-            return "{\"ID\":\"ADD_ROOM_RESP\"}"
 
 
     def GetTransactionID(self, item):
         return item["ID"]
-
-    def GetRoomID(self, item):
-        return item["rID"]

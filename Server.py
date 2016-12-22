@@ -1,7 +1,7 @@
 import socket
 import threading
 from Parser import Parser
-from struct import *
+import sys
 
 class Server(object):
     def __init__(self, host, port, timeout):
@@ -39,6 +39,7 @@ class Server(object):
                 else:
                    raise error('Client disconnected')
             except:
+                print("Unexpected error:", sys.exc_info()[0])
                 print ('Connection from ' + address[0] + ' is over.')
                 client.close()
                 return False
