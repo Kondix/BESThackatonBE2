@@ -1,6 +1,7 @@
 from Conversion.JsonToData import JsonToData
 from Conversion.DataToJson import DataToJson
 from DataBaseHandler import RoomDataBaseHandler
+from Reqs.TagKeeper import TagKeeper
 
 
 
@@ -10,6 +11,7 @@ class BaseRequest():
         self.jsonToData = JsonToData(request)
         self.dataToJson = DataToJson()
         self.roomDbHandler = RoomDataBaseHandler()
+        self.tagKeeper = TagKeeper()
         self.maxQuerySize = 15
 
     def Handle(self):

@@ -12,7 +12,7 @@ class GetRoomRequest(BaseRequest):
 
     def PrepareRoomAvlResponse(self, specRoom):
 
-        self.dataToJson.AddFieldByTag("ID", "AVL_ROOM_RESP")
+        self.dataToJson.AddFieldByTag(self.tagKeeper.tagID, self.tagKeeper.tranRoomAVL + self.tagKeeper.tagResponse)
         for idx in range(len(TagKeeper.roomAvlTags)):
             self.dataToJson.AddFieldByTag(TagKeeper.roomAvlTags[idx], specRoom[idx])
 

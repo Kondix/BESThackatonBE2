@@ -16,9 +16,9 @@ class GetRequest(BaseRequest):
         return roomsData
 
     def __PrepareResponse(self, roomsData):
-        self.dataToJson.AddFieldByTag("ID", "AVL_RESP")
-        self.dataToJson.AddFieldByTag("COUNT", len(roomsData))
-        self.dataToJson.AddFieldByTag("ROOMS", self.__GetListOfRooms(roomsData))
+        self.dataToJson.AddFieldByTag(self.tagKeeper.tagID, self.tagKeeper.tranAVL + self.tagKeeper.tagResponse)
+        self.dataToJson.AddFieldByTag(self.tagKeeper.tagCount, len(roomsData))
+        self.dataToJson.AddFieldByTag(self.tagKeeper.tagRooms, self.__GetListOfRooms(roomsData))
 
         return self.dataToJson.ParseToJson()
 
