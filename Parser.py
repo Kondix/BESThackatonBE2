@@ -9,7 +9,7 @@ from Conversion.JsonToData import JsonToData
 
 class Parser:
 
-    def __init__(self, jsonData = None):
+    def __init__(self, jsonData):
         self.jsonToData = JsonToData(jsonData)
         self.tagKeeper = TagKeeper()
 
@@ -21,7 +21,7 @@ class Parser:
 
     def __GetTransactionObject(self):
         # TODO: convert to switch
-        tranID = self.jsonToData.GetTransactionID()
+        tranID = self.jsonToData.GetValueByTag(self.tagKeeper.tagID)
         if tranID == self.tagKeeper.tranAVL:
             return GetRequest(self.jsonToData)
         elif tranID == self.tagKeeper.tranSpecAVL:

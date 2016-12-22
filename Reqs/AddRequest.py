@@ -8,11 +8,11 @@ class AddRequest(BaseRequest):
 
 
     def __AddToDb(self):
-        title = self.jsonToData.GetTitle()
-        hID = self.jsonToData.GetHostID()
-        hLVL = self.jsonToData.GetHostLvl()
-        descr = self.jsonToData.GetDescr()
-        maxUsr = self.jsonToData.GetMaxUsr()
+        title = self.jsonToData.GetValueByTag(self.tagKeeper.tagTitle)
+        hID = self.jsonToData.GetValueByTag(self.tagKeeper.tagHostID)
+        hLVL = self.jsonToData.GetValueByTag(self.tagKeeper.tagHostLvl)
+        descr = self.jsonToData.GetValueByTag(self.tagKeeper.tagDescr)
+        maxUsr = self.jsonToData.GetValueByTag(self.tagKeeper.tagMaxUsers)
 
         if self.roomDbHandler.getSimilarRecord(title, hID) != None:
             return "{\"ID\":\"ADD_RESP_ERROR_ALREADY_IN_BASE\"}"

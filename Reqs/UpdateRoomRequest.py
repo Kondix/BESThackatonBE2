@@ -4,7 +4,7 @@ from Reqs.TagKeeper import TagKeeper
 class UpdateRoomRequest(BaseRequest):
 
     def Handle(self):
-        rID = self.jsonToData.GetRoomID()
+        rID = self.jsonToData.GetValueByTag(self.tagKeeper.tagRoomID)
         specRoom = self.roomDbHandler.getSpecificRoomByIdx(rID)
 
         if specRoom != None:
