@@ -2,6 +2,7 @@ import json
 from DataBaseHandler import RoomDataBaseHandler
 from Reqs.GetRequest import GetRequest
 from Reqs.SpecificGetRequest import SpecificGetRequest
+from Reqs.AddRequest import AddRequest
 
 class Parser:
 
@@ -18,8 +19,6 @@ class Parser:
         tranObj = self.__GetTransactionObject()
         if tranObj is not None:
             return tranObj.Handle()
-        elif self.GetTransactionID(self.jsonData) == "ADD":
-            return self.HandleAdd()
         elif self.GetTransactionID(self.jsonData) == "UPDATE_ROOM":
             return self.HandleUpdateRoom()
         elif self.GetTransactionID(self.jsonData) == "AVL_ROOM":
@@ -27,10 +26,13 @@ class Parser:
         return None
 
     def __GetTransactionObject(self):
+        # TODO: convert to switch
         if self.GetTransactionID(self.jsonData) == "AVL":
             return GetRequest(self.request)
         if self.GetTransactionID(self.jsonData) == "SPEC_AVL":
             return SpecificGetRequest(self.request)
+        if self.GetTransactionID(self.jsonData) == "ADD":
+            return AddRequest(self.request)
         return None
 
     def HandleAvlRoom(self):
@@ -59,31 +61,11 @@ class Parser:
                                "user2": specRoom[2],"user3": specRoom[3], "user4": specRoom[4],
                                "user5": specRoom[5]}], separators=(',', ':'))
 
-    def HandleAdd(self):
-        #rID = self.GetRoomID(dict(self.jsonData["ROOMS"][0]))
-        rID = self.roomCnt
-        title = self.GetTitle(self.jsonData)
-        hID = self.GetHostID(self.jsonData)
-        hLVL = self.GetHostLvl(self.jsonData)
-        descr = self.GetDescr(self.jsonData)
-        maxUsr = self.GetMaxUsr(self.jsonData)
-        if self.roomDBHandler.getSimilarRecord(title, hID) != None:
-            return "{\"ID\":\"ADD_RESP_ERROR_ALREADY_IN_BASE\",\"rID\":" + str(rID) + "}"
-        else:
-            self.roomDBHandler.addRoom(rID, title, hID, hLVL, descr, maxUsr)
-            self.roomCnt += 1
-            return "{\"ID\":\"ADD_RESP\",\"rID\":" + str(rID) + "}"
-
-
     def GetAllRooms(self):
         for idx in range(1, self.maxQuerySize):
             if self.roomDBHandler.getRoomByIdx(idx) == None:
                 break
             self.rooms.append(self.roomDBHandler.getRoomByIdx(idx))
-
-    def GetAllRoomsWhere(self, descr):
-        self.rooms.clear()
-        self.rooms = self.roomDBHandler.getRoomByTitle(descr)
 
     def GetTransactionID(self, item):
         return item["ID"]
