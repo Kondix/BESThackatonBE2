@@ -5,6 +5,7 @@ class JsonToData():
     def __init__(self, request):
         self.__request = json.loads(request)
 
+    #TODO: change to GetValueByTag
     def GetTransactionID(self):
         return self.__request["ID"]
 
