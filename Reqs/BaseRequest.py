@@ -7,8 +7,8 @@ from Reqs.TagKeeper import TagKeeper
 
 class BaseRequest():
 
-    def __init__(self, request):
-        self.jsonToData = JsonToData(request)
+    def __init__(self, jsonToData):
+        self.jsonToData = jsonToData
         self.dataToJson = DataToJson()
         self.roomDbHandler = RoomDataBaseHandler()
         self.tagKeeper = TagKeeper()

@@ -1,18 +1,17 @@
-import json
 from Reqs.GetRequest import GetRequest
 from Reqs.SpecificGetRequest import SpecificGetRequest
 from Reqs.AddRequest import AddRequest
 from Reqs.GetRoomRequest import GetRoomRequest
 from Reqs.UpdateRoomRequest import UpdateRoomRequest
 from Reqs.TagKeeper import TagKeeper
+from Conversion.JsonToData import JsonToData
 
 
 class Parser:
 
     def __init__(self, jsonData = None):
-        self.request = jsonData
+        self.jsonToData = JsonToData(jsonData)
         self.tagKeeper = TagKeeper()
-        self.jsonData = json.loads(jsonData)
 
     def Parse(self):
         tranObj = self.__GetTransactionObject()
@@ -22,18 +21,15 @@ class Parser:
 
     def __GetTransactionObject(self):
         # TODO: convert to switch
-        tranID = self.GetTransactionID(self.jsonData)
+        tranID = self.jsonToData.GetTransactionID()
         if tranID == self.tagKeeper.tranAVL:
-            return GetRequest(self.request)
+            return GetRequest(self.jsonToData)
         elif tranID == self.tagKeeper.tranSpecAVL:
-            return SpecificGetRequest(self.request)
+            return SpecificGetRequest(self.jsonToData)
         elif tranID == self.tagKeeper.tranADD:
-            return AddRequest(self.request)
+            return AddRequest(self.jsonToData)
         elif tranID == self.tagKeeper.tranRoomAVL:
-            return GetRoomRequest(self.request)
+            return GetRoomRequest(self.jsonToData)
         elif tranID == self.tagKeeper.tranRoomUPDATE:
-            return UpdateRoomRequest(self.request)
+            return UpdateRoomRequest(self.jsonToData)
         return None
-
-    def GetTransactionID(self, item):
-        return item[self.tagKeeper.tagID]
