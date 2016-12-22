@@ -1,19 +1,18 @@
 import json
-from DataBaseHandler import RoomDataBaseHandler
 from Reqs.GetRequest import GetRequest
 from Reqs.SpecificGetRequest import SpecificGetRequest
 from Reqs.AddRequest import AddRequest
 from Reqs.GetRoomRequest import GetRoomRequest
 from Reqs.UpdateRoomRequest import UpdateRoomRequest
+from Reqs.TagKeeper import TagKeeper
 
 
 class Parser:
 
     def __init__(self, jsonData = None):
         self.request = jsonData
+        self.tagKeeper = TagKeeper()
         self.jsonData = json.loads(jsonData)
-        self.roomDBHandler = RoomDataBaseHandler()
-        self.maxQuerySize = 150
 
     def Parse(self):
         tranObj = self.__GetTransactionObject()
@@ -23,18 +22,18 @@ class Parser:
 
     def __GetTransactionObject(self):
         # TODO: convert to switch
-        if self.GetTransactionID(self.jsonData) == "AVL":
+        tranID = self.GetTransactionID(self.jsonData)
+        if tranID == self.tagKeeper.tranAVL:
             return GetRequest(self.request)
-        if self.GetTransactionID(self.jsonData) == "SPEC_AVL":
+        elif tranID == self.tagKeeper.tranSpecAVL:
             return SpecificGetRequest(self.request)
-        if self.GetTransactionID(self.jsonData) == "ADD":
+        elif tranID == self.tagKeeper.tranADD:
             return AddRequest(self.request)
-        if self.GetTransactionID(self.jsonData) == "AVL_ROOM":
+        elif tranID == self.tagKeeper.tranRoomAVL:
             return GetRoomRequest(self.request)
-        if self.GetTransactionID(self.jsonData) == "UPDATE_ROOM":
+        elif tranID == self.tagKeeper.tranRoomUPDATE:
             return UpdateRoomRequest(self.request)
         return None
 
-
     def GetTransactionID(self, item):
-        return item["ID"]
+        return item[self.tagKeeper.tagID]
